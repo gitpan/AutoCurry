@@ -1,0 +1,16 @@
+-*- Outline -*-
+
+* 0.1002 (2005-03-03)
+
+  * Improved docs:
+  - Enhanced example code and results
+  - Added section for module authors
+
+  * Fixed version numbers (number -> string)
+
+  * Bumped version to 0.10_02 and fixed author section of docs
+
+* 0.1001 (2005-02-17)
+
+  tagged  0.10_01 release
+  * Initial load

@@ -1,7 +1,7 @@
 package AutoCurry;
 
 # Tom Moertel <tom@moertel.com>
-# 2004-11-16
+# 2005-02-17
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ use Carp;
 use warnings;
 use strict;
 
-our $VERSION = 0.10_01;
+our $VERSION = "0.1002";
 
 my $PKG = __PACKAGE__;
 
@@ -122,7 +122,7 @@ functions to be curried:
 
     use AutoCurry qw( foo bar );
 
-Or, if you want to curry everything:
+Or, if you want to curry everything in the current package:
 
     use AutoCurry ':all';
 
@@ -131,12 +131,12 @@ Or, if you want to curry everything:
 You can also create variants at run time:
 
     my @created_variants =
-    AutoCurry::curry_named_functions(qw( foo bar ));
+    AutoCurry::curry_named_functions(qw( foo bar My::Package::baz ));
 
 The fully-qualified names of the created functions are returned:
 
     print "@created_variants";
-    # main::foo_c main::bar_c
+    # main::foo_c main::bar_c My::Package::baz
 
 If you are writing a module, this list of names is handy for
 augmenting your export lists.
@@ -206,9 +206,28 @@ original functions for the arguments you give them:
 The total cost of currying is reduced to appending a C<_c> suffix,
 which is probably as low as it's going to get on this side of Perl 6.
 
+
+=head1 A NOTE FOR MODULE AUTHORS
+
+The handling of C<use AutoCurry ':all'> relies upon an C<INIT>
+block, which may cause problems in environments such as mod_perl or
+if you are creating functions dynamically.  Therefore, I recommend
+that module authors call C<AutoCurry::curry_package> instead:
+
+    package My::Amazing::Thing;
+
+    use AutoCurry;   # but don't say ':all'
+
+    sub blargh { .... }
+    # more stuff here
+    # maybe generate a few functions dynamically
+
+    AutoCurry::curry_package();
+
+
 =head1 AUTHOR
 
-    Tom Moertel <tom@moertel.com>
+Tom Moertel (tom@moertel.com)
 
 =head1 COPYRIGHT and LICENSE
 

@@ -34,7 +34,7 @@ DESCRIPTION
 
         use AutoCurry qw( foo bar );
 
-    Or, if you want to curry everything:
+    Or, if you want to curry everything in the current package:
 
         use AutoCurry ':all';
 
@@ -42,12 +42,12 @@ DESCRIPTION
     You can also create variants at run time:
 
         my @created_variants =
-        AutoCurry::curry_named_functions(qw( foo bar ));
+        AutoCurry::curry_named_functions(qw( foo bar My::Package::baz ));
 
     The fully-qualified names of the created functions are returned:
 
         print "@created_variants";
-        # main::foo_c main::bar_c
+        # main::foo_c main::bar_c My::Package::baz
 
     If you are writing a module, this list of names is handy for augmenting
     your export lists.
@@ -113,8 +113,24 @@ MOTIVATION
     The total cost of currying is reduced to appending a "_c" suffix, which
     is probably as low as it's going to get on this side of Perl 6.
 
+A NOTE FOR MODULE AUTHORS
+    The handling of "use AutoCurry ':all'" relies upon an "INIT" block,
+    which may cause problems in environments such as mod_perl or if you are
+    creating functions dynamically. Therefore, I recommend that module
+    authors call "AutoCurry::curry_package" instead:
+
+        package My::Amazing::Thing;
+
+        use AutoCurry;   # but don't say ':all'
+
+        sub blargh { .... }
+        # more stuff here
+        # maybe generate a few functions dynamically
+
+        AutoCurry::curry_package();
+
 AUTHOR
-        Tom Moertel <tom@moertel.com>
+    Tom Moertel (tom@moertel.com)
 
 COPYRIGHT and LICENSE
     Copyright (c) 2004-05 by Thomas G Moertel. All rights reserved.

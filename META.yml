@@ -1,7 +1,8 @@
 --- #YAML:1.0
 name: AutoCurry
-version: 0.1001
-author: ~
+version: 0.1002
+author:
+  - Tom Moertel (tom@moertel.com)
 abstract: |-
   automatically create currying variants of functions
 license: perl
@@ -11,5 +12,5 @@ requires:
 provides:
   AutoCurry:
     file: lib/AutoCurry.pm
-    version: 0.1001
+    version: 0.1002
 generated_by: Module::Build version 0.2608

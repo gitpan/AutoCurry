@@ -11,7 +11,6 @@ use strict;
     sub t { "@_" };
 }
 
-;
 is( T1::t_c(1)->(2), "1 2", "use AutoCurry by name" );
 
 
