@@ -14,7 +14,7 @@ AutoCurry - automatically create currying variants of functions
     sub foo { print "@_\n"; }
     # currying variant, foo_c, is created automatically
 
-    my $hello = foo_c("Hello,");
+    my $hello = foo_c("Hello, ");
     $hello->("world!");       # Hello, world!
     $hello->("Pittsburgh!");  # Hello, Pittsburgh!
 
@@ -25,7 +25,8 @@ use Carp;
 use warnings;
 use strict;
 
-our $VERSION = "0.1002";
+our $VERSION = "0.1003";
+our $suffix  = "_c";
 
 my $PKG = __PACKAGE__;
 
@@ -52,7 +53,7 @@ sub curry_named_functions_from_package {
     no strict 'refs';
     my $pkg = shift() . "::";
     map {
-        my $curried_name = $_ . "_c";
+        my $curried_name = $_ . $suffix;
         carp "$PKG: currying $_ over existing $curried_name"
             if *$curried_name{CODE};
         _debug("making $curried_name");
@@ -148,18 +149,39 @@ augmenting your export lists.
     AutoCurry::curry_package();              # autocurries calling pkg
 
 Creates currying variants for all of the subroutines within the given
-package or, if no pacakge is given, the current package from which
+package or, if no package is given, the current package from which
 C<curry_package> was called.
 
 Returns a list of the functions created.
+
+
+=head2 Using another suffix
+
+Do not change the suffix unless you truly must.
+
+If for some reason you cannot use the standard C<_c> suffix, you
+can override it by changing C<$AutoCurry::suffix> I<for the duration
+of your calls to AutoCurry>.  Use C<do> and C<local> to limit the
+scope of your changes:
+
+    use AutoCurry;  # suffix changing is not compatible with ':all'
+
+    my @curried_fns = do {
+        local $AutoCurry::suffix = "_curry";
+        AutoCurry::curry_package();
+    };
+    # result: ( "main::foo_curry" )
+
+    sub foo { ... };
+    # foo_curry will be created by call to C<curry_package>, above
 
 
 =head1 MOTIVATION
 
 Currying reduces the cost of reusing functions by allowing you to
 "specialize" them by pre-binding values to a subset of their
-arguments.  Using it, you can convert any function of I<N> arguments
-into a family of I<N> related, specialized functions.
+arguments.  Using it, you can convert any function 
+into a family of related, specialized functions.
 
 Currying in Perl is somewhat awkward.  My motivation for
 writing this module was to minimize that awkwardness and
@@ -173,10 +195,13 @@ As an example, let's say we have a general-purpose logging function:
         print $fh "$heading: $message\n";
     }
 
+We can use it like so:
+
     log_to_file( *STDERR, "warning", "hull breach imminent!" );
 
 If we are logging a bunch of warnings to STDERR, we can save some work
-by specializing the function for that purpose:
+by creating a temporary, specialized version of the function that is
+tailored for our warnings:
 
     my $log_warning = sub {
         log_to_file( *STDERR, "warning", @_ );
@@ -184,10 +209,9 @@ by specializing the function for that purpose:
 
     $log_warning->("cap'n, she's breakin' up!");
 
-The C<log_warning> function, being tailored for the purpose, is easier
-to use.  However, having to create the function is a pain.  We are
-effectively currying by hand.  For this reason, many people use a
-helper function to curry for them:
+The C<log_warning> function is easier to use, but having to
+create it is a pain.  We are effectively currying by hand.
+For this reason, many people use a helper function to curry for them:
 
     $log_warning = curry( \&log_to_file, *STDERR, "warning" );
 

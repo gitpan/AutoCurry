@@ -1,5 +1,12 @@
 -*- Outline -*-
 
+* 0.1003 (2005-03-21)
+
+  * Added support for changing the _c suffix temporarily.
+    Thanks diotalevi on Perl Monks: http://perlmonks.org/?node_id=441070
+
+  * Clarified some bits of wording in the docs
+
 * 0.1002 (2005-03-03)
 
   * Improved docs:

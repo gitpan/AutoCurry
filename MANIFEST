@@ -7,3 +7,4 @@ MANIFEST.SKIP
 META.yml
 README
 t/basic.t
+t/suffix.t
